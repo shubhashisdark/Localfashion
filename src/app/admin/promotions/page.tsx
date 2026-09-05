@@ -17,10 +17,14 @@ const emptyDraft = {
 export default function AdminPromotionsPage() {
   const { promotions, upsertPromotion, deletePromotion } = useAdminData();
   const [draft, setDraft] = useState(emptyDraft);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  function handleAdd(e: React.FormEvent) {
+  async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     if (!draft.title.trim()) return;
+    setError(null);
+    setSaving(true);
 
     const promotion: Promotion = {
       id: `promo-${Date.now()}`,
@@ -35,12 +39,32 @@ export default function AdminPromotionsPage() {
       starts_at: null,
       ends_at: null,
     };
-    upsertPromotion(promotion);
-    setDraft(emptyDraft);
+    try {
+      await upsertPromotion(promotion);
+      setDraft(emptyDraft);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Promotion could not be saved.");
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function toggleActive(promo: Promotion) {
-    upsertPromotion({ ...promo, is_active: !promo.is_active });
+  async function toggleActive(promo: Promotion) {
+    setError(null);
+    try {
+      await upsertPromotion({ ...promo, is_active: !promo.is_active });
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Promotion could not be updated.");
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setError(null);
+    try {
+      await deletePromotion(id);
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Promotion could not be deleted.");
+    }
   }
 
   return (
@@ -49,6 +73,7 @@ export default function AdminPromotionsPage() {
       <p className="mt-1 text-[13.5px] text-ink-soft">
         Active promotions appear on the homepage automatically, in display order.
       </p>
+      {error && <p className="mt-3 border border-danger/30 bg-danger/5 px-3 py-2 text-[13px] text-danger">{error}</p>}
 
       <form onSubmit={handleAdd} className="mt-6 grid gap-3 border border-line bg-surface p-4 sm:grid-cols-2">
         <label>
@@ -95,7 +120,7 @@ export default function AdminPromotionsPage() {
           />
         </label>
         <div className="sm:col-span-2">
-          <Button type="submit"><Plus size={14} /> Add promotion</Button>
+          <Button type="submit" disabled={saving}><Plus size={14} /> {saving ? "Saving…" : "Add promotion"}</Button>
         </div>
       </form>
 
@@ -113,14 +138,14 @@ export default function AdminPromotionsPage() {
                 <input
                   type="checkbox"
                   checked={p.is_active}
-                  onChange={() => toggleActive(p)}
+                  onChange={() => void toggleActive(p)}
                   className="h-4 w-4 accent-oxblood"
                 />
                 Active
               </label>
               <button
                 aria-label="Delete promotion"
-                onClick={() => deletePromotion(p.id)}
+                onClick={() => void handleDelete(p.id)}
                 className="text-ink-faint hover:text-oxblood"
               >
                 <Trash2 size={15} />

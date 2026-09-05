@@ -36,7 +36,7 @@ export default async function HomePage() {
               className="object-cover opacity-25"
             />
           )}
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#070b24_8%,rgba(7,11,36,0.86)_48%,rgba(7,11,36,0.38))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#100f12_8%,rgba(16,15,18,0.9)_48%,rgba(16,15,18,0.42))]" />
         </div>
         <div className="mx-auto flex min-h-[30rem] max-w-7xl items-end px-4 pb-14 pt-28 sm:px-6 lg:min-h-[36rem] lg:px-8 lg:pb-20">
           <div className="max-w-xl animate-fade-up">

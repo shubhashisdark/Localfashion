@@ -37,8 +37,8 @@ interface AdminDataValue {
   upsertCategory: (category: Category) => void;
   setCategoryStatus: (id: string, status: Category["status"]) => void;
 
-  upsertPromotion: (promotion: Promotion) => void;
-  deletePromotion: (id: string) => void;
+  upsertPromotion: (promotion: Promotion) => Promise<Promotion>;
+  deletePromotion: (id: string) => Promise<void>;
 
   updateSettings: (next: StoreSettings) => void;
 }
@@ -138,15 +138,9 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     void createClient().from("categories").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
   }, []);
 
-  const upsertPromotion = useCallback((promotion: Promotion) => {
-    setPromotions((prev) => {
-      const exists = prev.some((p) => p.id === promotion.id);
-      return exists
-        ? prev.map((p) => (p.id === promotion.id ? promotion : p))
-        : [...prev, promotion];
-    });
-    void createClient().from("promotions").upsert({
-      id: promotion.id.startsWith("promo-") ? undefined : promotion.id,
+  const upsertPromotion = useCallback(async (promotion: Promotion): Promise<Promotion> => {
+    const supabase = createClient();
+    const payload = {
       title: promotion.title,
       subtitle: promotion.subtitle,
       discount_text: promotion.discount_text,
@@ -157,12 +151,27 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       is_active: promotion.is_active,
       starts_at: promotion.starts_at,
       ends_at: promotion.ends_at,
-    }, { onConflict: "id" });
+      updated_at: new Date().toISOString(),
+    };
+    const query = promotion.id.startsWith("promo-")
+      ? supabase.from("promotions").insert(payload)
+      : supabase.from("promotions").update(payload).eq("id", promotion.id);
+    const { data, error } = await query.select().single();
+    if (error || !data) throw error ?? new Error("Promotion could not be saved.");
+    const saved = data as Promotion;
+    setPromotions((prev) => {
+      const exists = prev.some((p) => p.id === promotion.id || p.id === saved.id);
+      return exists
+        ? prev.map((p) => (p.id === promotion.id || p.id === saved.id ? saved : p))
+        : [saved, ...prev];
+    });
+    return saved;
   }, []);
 
-  const deletePromotion = useCallback((id: string) => {
+  const deletePromotion = useCallback(async (id: string): Promise<void> => {
+    const { error } = await createClient().from("promotions").delete().eq("id", id);
+    if (error) throw error;
     setPromotions((prev) => prev.filter((p) => p.id !== id));
-    void createClient().from("promotions").delete().eq("id", id);
   }, []);
 
   const updateSettings = useCallback((next: StoreSettings) => {

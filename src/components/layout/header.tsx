@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X, ShoppingBag, Search } from "lucide-react";
 import { useCart } from "@/lib/cart/cart-context";
@@ -32,9 +33,10 @@ export function Header({ categories }: { categories: Category[] }) {
 
         <Link
           href="/"
-          className="font-display text-2xl italic tracking-tight text-ink lg:text-[26px]"
+          className="flex items-center gap-2.5 text-ink"
         >
-          Local Fashion
+          <Image src="/local-fashion-logo.svg" alt="" width={34} height={34} className="h-8 w-8" />
+          <span className="font-display text-xl italic tracking-tight lg:text-2xl">Local Fashion</span>
         </Link>
 
         {/* Desktop nav */}
