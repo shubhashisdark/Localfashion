@@ -28,7 +28,7 @@ export default async function HomePage() {
   return (
     <div>
       {promotions.length > 0 && <PromotionCarousel promotions={promotions} />}
-      <section className="relative isolate overflow-hidden border-b border-line">
+      {promotions.length === 0 && <section className="relative isolate overflow-hidden border-b border-line">
         <div className="absolute inset-0 -z-10 bg-surface">
           {heroImage && (
             <Image
@@ -58,7 +58,7 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Featured products */}
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">

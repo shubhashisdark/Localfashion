@@ -31,8 +31,8 @@ export function PromotionCarousel({ promotions }: { promotions: Promotion[] }) {
   }, [emblaApi, promotions.length]);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8" aria-label="Promotions">
-      <div className="relative overflow-hidden border border-line bg-surface">
+    <section className="mx-auto max-w-7xl px-4 pt-3 sm:px-6 sm:pt-5 lg:px-8" aria-label="Promotions">
+      <div className="relative overflow-hidden border border-line bg-surface shadow-[0_24px_70px_rgba(0,0,0,0.2)]">
         <div ref={viewportRef} className="overflow-hidden">
           <div className="flex touch-pan-y">
             {promotions.map((promotion, index) => (
@@ -49,7 +49,7 @@ export function PromotionCarousel({ promotions }: { promotions: Promotion[] }) {
               type="button"
               aria-label="Previous promotion"
               onClick={scrollPrev}
-              className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-linen/30 bg-ink/50 text-linen backdrop-blur transition-colors hover:bg-ink"
+              className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-linen/30 bg-ink/60 text-linen backdrop-blur transition-colors hover:bg-ink sm:left-5"
             >
               <ChevronLeft size={18} />
             </button>
@@ -57,7 +57,7 @@ export function PromotionCarousel({ promotions }: { promotions: Promotion[] }) {
               type="button"
               aria-label="Next promotion"
               onClick={scrollNext}
-              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-linen/30 bg-ink/50 text-linen backdrop-blur transition-colors hover:bg-ink"
+              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-linen/30 bg-ink/60 text-linen backdrop-blur transition-colors hover:bg-ink sm:right-5"
             >
               <ChevronRight size={18} />
             </button>
