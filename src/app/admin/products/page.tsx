@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useAdminData } from "@/lib/admin/admin-data-context";
@@ -218,7 +217,7 @@ export default function AdminProductsPage() {
                     <div className="flex items-center gap-3">
                       {primary && (
                         <div className="relative h-11 w-9 shrink-0 overflow-hidden bg-linen">
-                          <Image src={primary.image_url} alt="" fill sizes="36px" className="object-cover" />
+                          <img src={primary.image_url} alt="" className="absolute inset-0 h-full w-full object-cover" />
                         </div>
                       )}
                       <span className="truncate text-ink">{p.name}</span>

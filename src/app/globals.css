@@ -137,6 +137,47 @@ body {
     linear-gradient(115deg, rgba(214, 167, 93, 0.025), transparent 35%),
     var(--color-linen);
   color: var(--color-ink);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.storefront-theme::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.34;
+  background-image:
+    linear-gradient(rgba(214, 167, 93, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(214, 167, 93, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+  animation: atmosphere-drift 28s linear infinite;
+}
+
+.premium-floor {
+  position: absolute;
+  z-index: -1;
+  right: -10%;
+  bottom: -22%;
+  left: -10%;
+  height: 72%;
+  pointer-events: none;
+  opacity: 0.42;
+  transform: perspective(520px) rotateX(62deg) scale(1.15);
+  transform-origin: center bottom;
+  background-image:
+    linear-gradient(rgba(214, 167, 93, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(214, 167, 93, 0.09) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: linear-gradient(to top, black, transparent 78%);
+}
+
+@keyframes atmosphere-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 72px 72px, 72px 72px; }
 }
 
 .storefront-theme main {

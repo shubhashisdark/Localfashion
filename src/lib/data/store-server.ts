@@ -11,12 +11,26 @@ type ProductRow = Product & {
   variants?: Product["variants"];
 };
 
+function isSafePublicImageUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    if (!/^https?:$/.test(url.protocol)) return false;
+    if (/(^|\.)google\.com$/i.test(url.hostname)) return false;
+    if (url.hostname === "unsplash.com" || url.hostname === "www.unsplash.com") return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function mapProduct(row: ProductRow): Product {
+  const safeImages = (row.images ?? []).filter((image) => isSafePublicImageUrl(image.image_url));
+
   return {
     ...row,
     price: Number(row.price),
     sale_price: row.sale_price == null ? null : Number(row.sale_price),
-    images: row.images ?? [],
+    images: safeImages,
     variants: row.variants ?? [],
   };
 }
@@ -57,7 +71,10 @@ export async function getCategories(): Promise<Category[]> {
     .eq("status", "active")
     .order("name");
   if (error) throw error;
-  return (data ?? []) as Category[];
+  return (data ?? []).map((category) => ({
+    ...category,
+    image_url: category.image_url && isSafePublicImageUrl(category.image_url) ? category.image_url : null,
+  })) as Category[];
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
@@ -89,6 +106,7 @@ export async function getActivePromotions(): Promise<Promotion[]> {
   const now = Date.now();
   return ((data ?? []) as Promotion[]).filter(
     (promotion) =>
+      isSafePublicImageUrl(promotion.image_url) &&
       (!promotion.starts_at || new Date(promotion.starts_at).getTime() <= now) &&
       (!promotion.ends_at || new Date(promotion.ends_at).getTime() >= now)
   );

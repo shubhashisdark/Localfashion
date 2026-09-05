@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import { Upload, X, Star, GripVertical } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -83,8 +82,20 @@ export function ImageUploader({
 
   function addImageUrl() {
     const url = imageUrl.trim();
-    if (!/^https?:\/\//i.test(url)) {
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(url);
+    } catch {
       setUploadError("Enter a valid image URL starting with http:// or https://.");
+      return;
+    }
+    if (
+      !/^https?:$/.test(parsedUrl.protocol) ||
+      /(^|\.)google\.com$/i.test(parsedUrl.hostname) ||
+      parsedUrl.hostname === "unsplash.com" ||
+      parsedUrl.hostname === "www.unsplash.com"
+    ) {
+      setUploadError("Use a direct image URL, not a search result or redirect URL.");
       return;
     }
     localIdCounter += 1;
@@ -169,7 +180,8 @@ export function ImageUploader({
         <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
           {images.map((img, idx) => (
             <div key={img.id} className="group relative aspect-[4/5] overflow-hidden border border-line bg-linen">
-              <Image src={img.image_url} alt={img.alt_text ?? ""} fill sizes="150px" className="object-cover" />
+              {/* User-provided URLs may come from hosts that are not configured for next/image. */}
+              <img src={img.image_url} alt={img.alt_text ?? ""} className="absolute inset-0 h-full w-full object-cover" />
               {img.is_primary && (
                 <span className="absolute left-1 top-1 bg-oxblood px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-linen">
                   Primary

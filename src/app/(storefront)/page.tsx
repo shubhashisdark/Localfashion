@@ -42,6 +42,7 @@ export default async function HomePage() {
           )}
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#100f12_8%,rgba(16,15,18,0.9)_48%,rgba(16,15,18,0.42))]" />
         </div>
+        <div className="premium-floor" />
         <div className="mx-auto flex min-h-[30rem] max-w-7xl items-end px-4 pb-10 pt-28 sm:px-6 lg:min-h-[36rem] lg:px-8 lg:pb-14">
           <div className="flex w-full flex-col items-start gap-5 animate-fade-up sm:flex-row sm:items-end sm:justify-between">
             <p className="text-[11px] uppercase tracking-[0.18em] text-clay">Local Fashion / New season</p>
