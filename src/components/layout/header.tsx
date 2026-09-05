@@ -35,7 +35,7 @@ export function Header({ categories }: { categories: Category[] }) {
           href="/"
           className="flex items-center gap-2.5 text-ink"
         >
-          <Image src="/local-fashion-logo.svg" alt="" width={34} height={34} className="h-8 w-8" />
+          <Image src="/local-fashion-logo.svg" alt="Local Fashion logo" width={34} height={34} className="h-8 w-8" />
           <span className="font-display text-xl italic tracking-tight lg:text-2xl">Local Fashion</span>
         </Link>
 

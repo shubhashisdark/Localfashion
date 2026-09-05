@@ -1,10 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useAdminData } from "@/lib/admin/admin-data-context";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import type { Promotion } from "@/types";
+
+const DEMO_PROMOTION_IMAGE =
+  "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=85";
 
 const emptyDraft = {
   title: "",
@@ -12,6 +17,7 @@ const emptyDraft = {
   discount_text: "",
   button_text: "Shop now",
   target_url: "/shop",
+  image_url: DEMO_PROMOTION_IMAGE,
 };
 
 export default function AdminPromotionsPage() {
@@ -19,6 +25,33 @@ export default function AdminPromotionsPage() {
   const [draft, setDraft] = useState(emptyDraft);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleImageChange(file: File | undefined) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image file.");
+      return;
+    }
+
+    setError(null);
+    setUploading(true);
+    const supabase = createClient();
+    const path = `promotions/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
+    if (uploadError) {
+      setError(uploadError.message);
+      setUploading(false);
+      return;
+    }
+
+    const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${path
+      .split("/")
+      .map(encodeURIComponent)
+      .join("/")}`;
+    setDraft((current) => ({ ...current, image_url: imageUrl }));
+    setUploading(false);
+  }
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +64,7 @@ export default function AdminPromotionsPage() {
       title: draft.title.trim(),
       subtitle: draft.subtitle.trim() || null,
       discount_text: draft.discount_text.trim() || null,
-      image_url: `https://placehold.co/1600x1000/eee7d8/221f1a?text=${encodeURIComponent(draft.title)}`,
+      image_url: draft.image_url,
       button_text: draft.button_text.trim() || "Shop now",
       target_url: draft.target_url.trim() || "/shop",
       display_order: promotions.length + 1,
@@ -47,6 +80,17 @@ export default function AdminPromotionsPage() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function loadDemoPromotion() {
+    setDraft({
+      title: "The New Season Edit",
+      subtitle: "Everyday silhouettes, considered details, made to move with you.",
+      discount_text: "NEW ARRIVALS",
+      button_text: "Shop the edit",
+      target_url: "/shop",
+      image_url: DEMO_PROMOTION_IMAGE,
+    });
   }
 
   async function toggleActive(promo: Promotion) {
@@ -85,6 +129,24 @@ export default function AdminPromotionsPage() {
             placeholder="Festive Collection"
           />
         </label>
+        <label className="sm:col-span-2">
+          <span className="mb-1.5 block text-[13px] text-ink">Promotion photo</span>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(event) => void handleImageChange(event.target.files?.[0])}
+            className="block w-full text-[12px] text-ink-soft file:mr-2 file:border-0 file:bg-ink file:px-3 file:py-2 file:text-[12px] file:text-linen"
+          />
+          {draft.image_url && (
+            <Image
+              src={draft.image_url}
+              alt="Promotion preview"
+              width={320}
+              height={120}
+              className="mt-3 h-28 w-full max-w-sm object-cover"
+            />
+          )}
+        </label>
         <label>
           <span className="mb-1.5 block text-[13px] text-ink">Discount text</span>
           <input
@@ -120,7 +182,12 @@ export default function AdminPromotionsPage() {
           />
         </label>
         <div className="sm:col-span-2">
-          <Button type="submit" disabled={saving}><Plus size={14} /> {saving ? "Saving…" : "Add promotion"}</Button>
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" disabled={saving || uploading}><Plus size={14} /> {saving ? "Saving…" : "Add promotion"}</Button>
+            <Button type="button" variant="outline" onClick={loadDemoPromotion} disabled={saving || uploading}>
+              Use demo promotion
+            </Button>
+          </div>
         </div>
       </form>
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { InstagramGlyph } from "@/components/ui/icons";
 import type { StoreSettings, Category } from "@/types";
 
@@ -16,7 +17,10 @@ export function Footer({
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
-            <p className="font-display text-xl italic text-ink">{settings.store_name}</p>
+            <Link href="/" className="inline-flex items-center gap-2.5 text-ink">
+              <Image src="/local-fashion-logo.svg" alt="Local Fashion logo" width={42} height={42} className="h-10 w-10" />
+              <span className="font-display text-xl italic">{settings.store_name}</span>
+            </Link>
             <p className="mt-3 max-w-[22ch] text-sm leading-relaxed text-ink-soft">
               Fashion from Instagram, now easy to browse and order.
             </p>

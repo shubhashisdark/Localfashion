@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import { InstagramGlyph } from "@/components/ui/icons";
 import {
   getActivePromotions,
@@ -21,9 +21,13 @@ export default async function HomePage() {
   const settings = getStoreSettings();
   const newest = (await getPublishedProducts()).slice(0, 4);
   const heroImage = featured[0]?.images.find((image) => image.is_primary)?.image_url;
+  const whatsappUrl = `https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(
+    `Hi ${settings.store_name}, I would like to see your latest collection.`
+  )}`;
 
   return (
     <div>
+      {promotions.length > 0 && <PromotionCarousel promotions={promotions} />}
       <section className="relative isolate overflow-hidden border-b border-line">
         <div className="absolute inset-0 -z-10 bg-surface">
           {heroImage && (
@@ -38,23 +42,23 @@ export default async function HomePage() {
           )}
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#100f12_8%,rgba(16,15,18,0.9)_48%,rgba(16,15,18,0.42))]" />
         </div>
-        <div className="mx-auto flex min-h-[30rem] max-w-7xl items-end px-4 pb-14 pt-28 sm:px-6 lg:min-h-[36rem] lg:px-8 lg:pb-20">
-          <div className="max-w-xl animate-fade-up">
+        <div className="mx-auto flex min-h-[30rem] max-w-7xl items-end px-4 pb-10 pt-28 sm:px-6 lg:min-h-[36rem] lg:px-8 lg:pb-14">
+          <div className="flex w-full flex-col items-start gap-5 animate-fade-up sm:flex-row sm:items-end sm:justify-between">
             <p className="text-[11px] uppercase tracking-[0.18em] text-clay">Local Fashion / New season</p>
-            <h1 className="mt-4 max-w-lg text-5xl font-semibold leading-[0.95] tracking-tight text-ink sm:text-7xl">
-              Everyday pieces, distinctly yours.
-            </h1>
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink-soft">
-              Thoughtful clothing and finishing details, selected for the way you actually live.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <LinkButton href="/shop" size="lg">Shop products <ArrowRight size={15} /></LinkButton>
-              <LinkButton href="/about" size="lg" variant="outline">Our story</LinkButton>
+            <div className="flex shrink-0 flex-wrap justify-end gap-2">
+              <LinkButton href="/shop" size="lg">Shop now <ArrowRight size={15} /></LinkButton>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-13 items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-linen/50 px-5 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-linen"
+              >
+                <MessageCircle size={16} /> WhatsApp
+              </a>
             </div>
           </div>
         </div>
       </section>
-      {promotions.length > 0 && <PromotionCarousel promotions={promotions} />}
 
       {/* Featured products */}
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">

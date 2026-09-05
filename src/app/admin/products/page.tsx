@@ -51,7 +51,12 @@ export default function AdminProductsPage() {
       const categoryBySlug = new Map((currentCategories ?? []).map((category) => [category.slug, category.id]));
       const missingCategories = DEMO_CATEGORIES
         .filter(([, slug]) => !categoryBySlug.has(slug))
-        .map(([name, slug]) => ({ name, slug, status: "active" }));
+        .map(([name, slug], index) => ({
+          name,
+          slug,
+          status: "active",
+          image_url: DEMO_PHOTOS[index % DEMO_PHOTOS.length],
+        }));
 
       if (missingCategories.length > 0) {
         const { data: createdCategories, error: categoryInsertError } = await supabase
