@@ -66,6 +66,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | undefi
     .from("categories")
     .select("*")
     .eq("slug", slug)
+    .eq("status", "active")
     .maybeSingle();
   if (error) throw error;
   return (data as Category | null) ?? undefined;

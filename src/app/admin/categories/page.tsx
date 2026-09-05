@@ -17,6 +17,7 @@ export default function AdminCategoriesPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   async function handleImageChange(file: File | undefined) {
     if (!file) return;
@@ -69,6 +70,18 @@ export default function AdminCategoriesPage() {
     setName("");
     setDescription("");
     setImageUrl(null);
+  }
+
+  async function handleStatusChange(id: string, status: Category["status"]) {
+    setError(null);
+    setUpdatingId(id);
+    try {
+      await setCategoryStatus(id, status);
+    } catch (statusError) {
+      setError(statusError instanceof Error ? statusError.message : "Unable to update category visibility.");
+    } finally {
+      setUpdatingId(null);
+    }
   }
 
   return (
@@ -135,13 +148,15 @@ export default function AdminCategoriesPage() {
                 {c.status}
               </span>
               <button
-                onClick={() => setCategoryStatus(c.id, c.status === "active" ? "hidden" : "active")}
+                disabled={updatingId === c.id}
+                onClick={() => void handleStatusChange(c.id, c.status === "active" ? "hidden" : "active")}
                 className="text-ink-soft hover:text-ink"
               >
                 {c.status === "active" ? "Hide" : "Show"}
               </button>
               <button
-                onClick={() => setCategoryStatus(c.id, "archived")}
+                onClick={() => void handleStatusChange(c.id, "archived")}
+                disabled={updatingId === c.id}
                 className="text-ink-faint hover:text-oxblood"
               >
                 Archive

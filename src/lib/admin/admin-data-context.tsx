@@ -35,7 +35,7 @@ interface AdminDataValue {
   setVariantStock: (productId: string, variantId: string, stock: number) => void;
 
   upsertCategory: (category: Category) => void;
-  setCategoryStatus: (id: string, status: Category["status"]) => void;
+  setCategoryStatus: (id: string, status: Category["status"]) => Promise<void>;
 
   upsertPromotion: (promotion: Promotion) => Promise<Promotion>;
   deletePromotion: (id: string) => Promise<void>;
@@ -133,9 +133,13 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     }).eq("id", category.id);
   }, []);
 
-  const setCategoryStatus = useCallback((id: string, status: Category["status"]) => {
+  const setCategoryStatus = useCallback(async (id: string, status: Category["status"]): Promise<void> => {
+    const { error } = await createClient()
+      .from("categories")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) throw error;
     setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, status } : c)));
-    void createClient().from("categories").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
   }, []);
 
   const upsertPromotion = useCallback(async (promotion: Promotion): Promise<Promotion> => {
