@@ -15,6 +15,7 @@ export default function AdminCategoriesPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrlInput, setImageUrlInput] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -44,6 +45,11 @@ export default function AdminCategoriesPage() {
         .join("/")}`
     );
     setImageUploading(false);
+  }
+
+  function handleImageUrl(value: string) {
+    setImageUrlInput(value);
+    setImageUrl(value.trim() && /^https?:\/\//i.test(value.trim()) ? value.trim() : null);
   }
 
   async function handleAdd(e: React.FormEvent) {
@@ -125,6 +131,12 @@ export default function AdminCategoriesPage() {
               className="mt-2 h-12 w-12 object-cover"
             />
           )}
+          <input
+            value={imageUrlInput}
+            onChange={(event) => handleImageUrl(event.target.value)}
+            placeholder="Or paste image URL"
+            className="mt-2 w-full max-w-[220px] border border-line bg-linen px-2.5 py-2 text-[12px] focus:border-ink"
+          />
         </label>
         <Button type="submit" disabled={imageUploading}>
           <Plus size={14} /> {imageUploading ? "Uploading…" : "Add"}

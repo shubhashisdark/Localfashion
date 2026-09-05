@@ -19,6 +19,7 @@ export function ImageUploader({
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleFiles(files: FileList | null) {
@@ -80,6 +81,29 @@ export function ImageUploader({
     onChange(next);
   }
 
+  function addImageUrl() {
+    const url = imageUrl.trim();
+    if (!/^https?:\/\//i.test(url)) {
+      setUploadError("Enter a valid image URL starting with http:// or https://.");
+      return;
+    }
+    localIdCounter += 1;
+    onChange([
+      ...images,
+      {
+        id: `url-${localIdCounter}`,
+        product_id: "",
+        image_url: url,
+        storage_path: null,
+        display_order: images.length,
+        is_primary: images.length === 0,
+        alt_text: "Product image",
+      },
+    ]);
+    setImageUrl("");
+    setUploadError(null);
+  }
+
   function setPrimary(id: string) {
     onChange(images.map((img) => ({ ...img, is_primary: img.id === id })));
   }
@@ -127,6 +151,19 @@ export function ImageUploader({
       </div>
 
       {uploadError && <p className="mt-2 text-[12.5px] text-danger">{uploadError}</p>}
+
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+        <input
+          value={imageUrl}
+          onChange={(event) => setImageUrl(event.target.value)}
+          placeholder="Paste image URL"
+          aria-label="Product image URL"
+          className="min-w-0 flex-1 border border-line bg-surface px-3 py-2 text-[13px] focus:border-ink"
+        />
+        <button type="button" onClick={addImageUrl} className="border border-ink px-3 py-2 text-[12px] text-ink hover:bg-ink hover:text-linen">
+          Add URL
+        </button>
+      </div>
 
       {images.length > 0 && (
         <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">

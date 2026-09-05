@@ -146,6 +146,12 @@ export default function AdminPromotionsPage() {
               className="mt-3 h-28 w-full max-w-sm object-cover"
             />
           )}
+          <input
+            value={draft.image_url}
+            onChange={(event) => setDraft((current) => ({ ...current, image_url: event.target.value }))}
+            placeholder="Or paste image URL"
+            className="mt-2 w-full max-w-sm border border-line bg-linen px-3 py-2 text-[12px] focus:border-ink"
+          />
         </label>
         <label>
           <span className="mb-1.5 block text-[13px] text-ink">Discount text</span>
