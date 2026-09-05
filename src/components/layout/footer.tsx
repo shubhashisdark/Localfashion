@@ -18,7 +18,7 @@ export function Footer({
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2.5 text-ink">
-              <Image src="/local-fashion-logo.svg" alt="Local Fashion logo" width={42} height={42} className="h-10 w-10" />
+              <Image src="/local-fashion-logo.jpeg" alt="Local Fashion logo" width={42} height={42} className="h-10 w-10" />
               <span className="font-display text-xl italic">{settings.store_name}</span>
             </Link>
             <p className="mt-3 max-w-[22ch] text-sm leading-relaxed text-ink-soft">
